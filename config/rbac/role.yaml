@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - datasciencecluster.opendatahub.io.opendatahub.io
+  resources:
+  - datascienceclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datasciencecluster.opendatahub.io.opendatahub.io
+  resources:
+  - datascienceclusters/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - datasciencecluster.opendatahub.io.opendatahub.io
+  resources:
+  - datascienceclusters/status
+  verbs:
+  - get
+  - patch
+  - update
