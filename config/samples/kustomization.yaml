@@ -1,4 +1,5 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
 - datasciencecluster.opendatahub.io_v1alpha1_datasciencecluster.yaml
+- workbench.opendatahub.io_v1alpha1_workbench.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

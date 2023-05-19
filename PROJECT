@@ -12,9 +12,17 @@ resources:
     crdVersion: v1
     namespaced: true
   controller: true
-  domain: ''
   group: datasciencecluster.opendatahub.io
   kind: DataScienceCluster
   path: github.com/opendatahub-io/opendatahub-operator/apis/datasciencecluster.opendatahub.io/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: opendatahub.io
+  group: workbench.opendatahub.io
+  kind: WorkBench
+  path: github.com/opendatahub-io/opendatahub-operator/apis/workbench.opendatahub.io/v1alpha1
   version: v1alpha1
 version: "3"

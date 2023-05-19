@@ -32,7 +32,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	datascienceclusteropendatahubiov1alpha1 "github.com/opendatahub-io/opendatahub-operator/apis/datasciencecluster.opendatahub.io/v1alpha1"
+	workbenchopendatahubiov1alpha1 "github.com/opendatahub-io/opendatahub-operator/apis/workbench.opendatahub.io/v1alpha1"
 	datascienceclusteropendatahubiocontrollers "github.com/opendatahub-io/opendatahub-operator/controllers/datasciencecluster.opendatahub.io"
+	workbenchopendatahubiocontrollers "github.com/opendatahub-io/opendatahub-operator/controllers/workbench.opendatahub.io"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -45,6 +47,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(datascienceclusteropendatahubiov1alpha1.AddToScheme(scheme))
+	utilruntime.Must(workbenchopendatahubiov1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -94,6 +97,13 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "DataScienceCluster")
+		os.Exit(1)
+	}
+	if err = (&workbenchopendatahubiocontrollers.WorkBenchReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "WorkBench")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
