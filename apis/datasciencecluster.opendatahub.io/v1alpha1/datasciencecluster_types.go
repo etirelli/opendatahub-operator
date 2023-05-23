@@ -26,40 +26,42 @@ import (
 
 // DataScienceClusterSpec defines the desired state of DataScienceCluster
 type DataScienceClusterSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// A profile sets the default components and configuration to install for a given
+	// use case. The profile configuration can still be overriden by the user on a per
+	// component basis. If not defined, the 'full' profile is used. Valid values are:
+	// - full: all components are installed
+	// - serving: only serving components are installed
+	// - training: only training components are installed
+	// - workbench: only workbench components are installed
+	Profile string `json:"profile,omitempty"`
 
-	// Foo is an example field of DataScienceCluster. Edit datasciencecluster_types.go to remove/update
-	Notebooks Notebooks `json:"notebooks,omitempty"`
-	Serving   Serving   `json:"serving,omitempty"`
-	Training  Training  `json:"training,omitempty"`
+	// Components is used to override and fine tune specific component configurations.
+	Components Components `json:"components,omitempty"`
+}
+
+type Components struct {
+	// Dashboard component configuration
+	Dashboard Dashboard `json:"dashboard,omitempty"`
+
+	// DataServicePipeline component configuration
+	Pipeline Pipeline `json:"dataServicePipeline,omitempty"`
 }
 
 type Component struct {
-	Enabled    bool                    `json:"enabled"`
-	Dashboard  bool                    `json:"dashboard"`
-	Monitoring bool                    `json:"monitoring"`
-	Resources  v1.ResourceRequirements `json:"resources"`
-	Replicas   int64                   `json:"replicas"`
+	// enables or disables the component. A disabled component will not be installed.
+	Enabled bool `json:"enabled,omitempty"`
+	// number of replicas to deploy for the component
+	Replicas int64 `json:"replicas,omitempty"`
+	// resources to allocate to the component
+	Resources v1.ResourceRequirements `json:"resources,omitempty"`
 }
 
-type Notebooks struct {
-	Component      `json:""`
-	NotebookImages NotebookImage `json:"notebookImages"`
-}
-
-type NotebookImage struct {
-	Managed bool `json:"managed"`
-}
-
-type Serving struct {
+type Dashboard struct {
 	Component `json:""`
-	// Serving specific configurations
 }
 
-type Training struct {
+type Pipeline struct {
 	Component `json:""`
-	// Training specific configurations
 }
 
 // DataScienceClusterStatus defines the observed state of DataScienceCluster
