@@ -76,6 +76,29 @@ spec:
       clusterPermissions:
       - rules:
         - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - namespaces
+          - operatorgroups
+          - secrets
+          - serviceaccounts
+          - services
+          verbs:
+          - create
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - addons.managed.openshift.io
+          resources:
+          - addons
+          verbs:
+          - get
+          - list
+        - apiGroups:
           - datasciencecluster.opendatahub.io
           resources:
           - datascienceclusters
@@ -101,6 +124,20 @@ spec:
           - get
           - patch
           - update
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterrolebindings
+          - clusterroles
+          - rolebindings
+          - roles
+          verbs:
+          - create
+          - get
+          - list
+          - patch
+          - update
+          - watch
         - apiGroups:
           - authentication.k8s.io
           resources:
@@ -161,7 +198,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: quay.io/opendatahub/opendatahub-operator:dev-0.0.1
+                image: quay.io/vhire/opendatahub-operator:dev-0.0.1
                 imagePullPolicy: Always
                 livenessProbe:
                   httpGet:
