@@ -161,18 +161,18 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 			"Failed to reconcile training resources on DataScienceCluster instance %s", instance.Name)
 		return ctrl.Result{}, err
 	}
-	// if err = reconcileServing(instance, r.Client, r.Scheme, plan); err != nil {
-	// 	r.Log.Error(err, "failed to reconcile DataScienceCluster (serving resources)")
-	// 	r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
-	// 		"Failed to reconcile serving resources on DataScienceCluster instance %s", instance.Name)
-	// 	return ctrl.Result{}, err
-	// }
-	// if err = reconcileWorkbench(instance, r.Client, r.Scheme, plan); err != nil {
-	// 	r.Log.Error(err, "failed to reconcile DataScienceCluster (workbench resources)")
-	// 	r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
-	// 		"Failed to reconcile common workbench on DataScienceCluster instance %s", instance.Name)
-	// 	return ctrl.Result{}, err
-	// }
+	if err = reconcileServing(instance, r.Client, r.Scheme, plan); err != nil {
+		r.Log.Error(err, "failed to reconcile DataScienceCluster (serving resources)")
+		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
+			"Failed to reconcile serving resources on DataScienceCluster instance %s", instance.Name)
+		return ctrl.Result{}, err
+	}
+	if err = reconcileWorkbench(instance, r.Client, r.Scheme, plan); err != nil {
+		r.Log.Error(err, "failed to reconcile DataScienceCluster (workbench resources)")
+		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
+			"Failed to reconcile common workbench on DataScienceCluster instance %s", instance.Name)
+		return ctrl.Result{}, err
+	}
 
 	// finalize reconciliation
 	status.SetCompleteCondition(&instance.Status.Conditions, status.ReconcileCompleted, "DataScienceCluster resource reconciled successfully.")
@@ -230,7 +230,20 @@ func reconcileWorkbench(instance *dsc.DataScienceCluster, client client.Client, 
 }
 
 func reconcileServing(instance *dsc.DataScienceCluster, client client.Client, scheme *runtime.Scheme, plan *profiles.ReconciliationPlan) error {
-	panic("unimplemented")
+	err := deploy.DeployManifestsFromPath(instance, client,
+		"/opt/odh-manifests/odh-notebook-controller/base",
+		"opendatahub",
+		scheme, plan.Components[profiles.ServingComponent])
+
+	if err != nil {
+		return err
+	}
+
+	err = deploy.DeployManifestsFromPath(instance, client,
+		"/opt/odh-manifests/notebook-images/base",
+		"opendatahub",
+		scheme, plan.Components[profiles.ServingComponent])
+	return err
 }
 
 func reconcileTraining(instance *dsc.DataScienceCluster, client client.Client, scheme *runtime.Scheme, plan *profiles.ReconciliationPlan) error {
