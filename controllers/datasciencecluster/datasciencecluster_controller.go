@@ -149,30 +149,30 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 		}
 	}
 
-	if err = reconcileDashboard(instance, r.Client, r.Scheme, plan); err != nil {
-		r.Log.Error(err, "failed to reconcile DataScienceCluster (dashboard resources)")
-		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
-			"Failed to reconcile dashboard resources on DataScienceCluster instance %s", instance.Name)
-		return ctrl.Result{}, err
-	}
+	// if err = reconcileDashboard(instance, r.Client, r.Scheme, plan); err != nil {
+	// 	r.Log.Error(err, "failed to reconcile DataScienceCluster (dashboard resources)")
+	// 	r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
+	// 		"Failed to reconcile dashboard resources on DataScienceCluster instance %s", instance.Name)
+	// 	return ctrl.Result{}, err
+	// }
 	if err = reconcileTraining(instance, r.Client, r.Scheme, plan); err != nil {
 		r.Log.Error(err, "failed to reconcile DataScienceCluster (training resources)")
 		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
 			"Failed to reconcile training resources on DataScienceCluster instance %s", instance.Name)
 		return ctrl.Result{}, err
 	}
-	if err = reconcileServing(instance, r.Client, r.Scheme, plan); err != nil {
-		r.Log.Error(err, "failed to reconcile DataScienceCluster (serving resources)")
-		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
-			"Failed to reconcile serving resources on DataScienceCluster instance %s", instance.Name)
-		return ctrl.Result{}, err
-	}
-	if err = reconcileWorkbench(instance, r.Client, r.Scheme, plan); err != nil {
-		r.Log.Error(err, "failed to reconcile DataScienceCluster (workbench resources)")
-		r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
-			"Failed to reconcile common workbench on DataScienceCluster instance %s", instance.Name)
-		return ctrl.Result{}, err
-	}
+	// if err = reconcileServing(instance, r.Client, r.Scheme, plan); err != nil {
+	// 	r.Log.Error(err, "failed to reconcile DataScienceCluster (serving resources)")
+	// 	r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
+	// 		"Failed to reconcile serving resources on DataScienceCluster instance %s", instance.Name)
+	// 	return ctrl.Result{}, err
+	// }
+	// if err = reconcileWorkbench(instance, r.Client, r.Scheme, plan); err != nil {
+	// 	r.Log.Error(err, "failed to reconcile DataScienceCluster (workbench resources)")
+	// 	r.Recorder.Eventf(instance, corev1.EventTypeWarning, "DataScienceClusterReconcileError",
+	// 		"Failed to reconcile common workbench on DataScienceCluster instance %s", instance.Name)
+	// 	return ctrl.Result{}, err
+	// }
 
 	// finalize reconciliation
 	status.SetCompleteCondition(&instance.Status.Conditions, status.ReconcileCompleted, "DataScienceCluster resource reconciled successfully.")
@@ -234,7 +234,11 @@ func reconcileServing(instance *dsc.DataScienceCluster, client client.Client, sc
 }
 
 func reconcileTraining(instance *dsc.DataScienceCluster, client client.Client, scheme *runtime.Scheme, plan *profiles.ReconciliationPlan) error {
-	panic("unimplemented")
+	err := deploy.DeployManifestsFromPath(instance, client,
+		"/opt/odh-manifests/data-science-pipelines-operator/base",
+		"opendatahub",
+		scheme, plan.Components[profiles.TrainingComponent])
+	return err
 }
 
 func reconcileDashboard(instance *dsc.DataScienceCluster, client client.Client, scheme *runtime.Scheme, plan *profiles.ReconciliationPlan) error {
