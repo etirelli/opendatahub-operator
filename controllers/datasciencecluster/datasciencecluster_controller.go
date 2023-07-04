@@ -29,7 +29,6 @@ import (
 	addonv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	operators "github.com/operator-framework/api/pkg/operators/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -71,7 +70,7 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 
 	instance := &dsc.DataScienceCluster{}
 	err := r.Client.Get(ctx, req.NamespacedName, instance)
-	if err != nil && apierrs.IsNotFound(err) {
+	if err != nil && errors.IsNotFound(err) {
 		return ctrl.Result{}, nil
 	} else if err != nil {
 		return ctrl.Result{}, err
@@ -210,7 +209,7 @@ func (r *DataScienceClusterReconciler) isManagedService() bool {
 	expectedAddon := &addonv1alpha1.Addon{}
 	err := r.Client.Get(context.TODO(), client.ObjectKey{Name: "managed-odh"}, expectedAddon)
 	if err != nil {
-		if apierrs.IsNotFound(err) {
+		if errors.IsNotFound(err) {
 			return false
 		} else {
 			r.Log.Error(err, "error getting Addon instance for managed service")
