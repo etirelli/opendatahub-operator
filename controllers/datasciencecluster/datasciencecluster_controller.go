@@ -105,9 +105,6 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 			return ctrl.Result{}, err
 		}
 	}
-	if instance.Status.InstalledComponents == nil {
-		instance.Status.InstalledComponents = make(map[string]bool)
-	}
 
 	// Ensure all ommited components are disabled explicitly
 	instance, err = r.updateComponents(instance)
@@ -172,6 +169,9 @@ func (r *DataScienceClusterReconciler) reconcileSubComponent(instance *dsc.DataS
 	if err != nil {
 		instance = r.reportError(err, instance, "failed to reconcile "+componentName+" on DataScienceCluster")
 		return instance, ctrl.Result{}, err
+	}
+	if instance.Status.InstalledComponents == nil {
+		instance.Status.InstalledComponents = make(map[string]bool)
 	}
 	instance.Status.InstalledComponents[componentName] = enabled
 
