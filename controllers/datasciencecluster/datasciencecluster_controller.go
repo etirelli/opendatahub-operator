@@ -24,6 +24,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/opendatahub-io/opendatahub-operator/v2/components/dashboard"
 	"github.com/opendatahub-io/opendatahub-operator/v2/pkg/upgrade"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
@@ -248,6 +249,14 @@ func (r *DataScienceClusterReconciler) reconcileSubComponent(ctx context.Context
 	component components.ComponentInterface,
 ) (*dsc.DataScienceCluster, error) {
 	componentName := component.GetComponentName()
+
+	// JUST FOR DEBUGGING
+	// TODO: REMOVE
+	if componentName == dashboard.ComponentName {
+		return instance, nil
+	}
+	// END OF DEBUGGING
+
 	enabled := component.GetManagementState() == v1.Managed
 	// First set conditions to reflect a component is about to be reconciled
 	instance, err := r.updateStatus(ctx, instance, func(saved *dsc.DataScienceCluster) {
