@@ -21,11 +21,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/opendatahub-io/opendatahub-operator/v2/pkg/upgrade"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
-	"reflect"
-	"time"
 
 	"github.com/go-logr/logr"
 	v1 "github.com/openshift/api/operator/v1"
@@ -169,11 +170,11 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 	}
 
 	// Ensure all omitted components show up as explicitly disabled
-	instance, err = r.updateComponents(ctx, instance)
-	if err != nil {
-		_ = r.reportError(err, instance, "error updating list of components in the CR")
-		return ctrl.Result{}, err
-	}
+	// instance, err = r.updateComponents(ctx, instance)
+	// if err != nil {
+	// 	_ = r.reportError(err, instance, "error updating list of components in the CR")
+	// 	return ctrl.Result{}, err
+	// }
 
 	// Initialize error list, instead of returning errors after every component is deployed
 	var componentErrors *multierror.Error
