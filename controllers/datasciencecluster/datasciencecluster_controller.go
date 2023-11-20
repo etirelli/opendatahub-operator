@@ -24,7 +24,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/opendatahub-io/opendatahub-operator/v2/components/dashboard"
 	"github.com/opendatahub-io/opendatahub-operator/v2/pkg/upgrade"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
@@ -170,13 +169,6 @@ func (r *DataScienceClusterReconciler) Reconcile(ctx context.Context, req ctrl.R
 		return ctrl.Result{}, errors.New("only one instance of DSCInitialization object is allowed")
 	}
 
-	// Ensure all omitted components show up as explicitly disabled
-	// instance, err = r.updateComponents(ctx, instance)
-	// if err != nil {
-	// 	_ = r.reportError(err, instance, "error updating list of components in the CR")
-	// 	return ctrl.Result{}, err
-	// }
-
 	// Initialize error list, instead of returning errors after every component is deployed
 	var componentErrors *multierror.Error
 
@@ -249,13 +241,6 @@ func (r *DataScienceClusterReconciler) reconcileSubComponent(ctx context.Context
 	component components.ComponentInterface,
 ) (*dsc.DataScienceCluster, error) {
 	componentName := component.GetComponentName()
-
-	// JUST FOR DEBUGGING
-	// TODO: REMOVE
-	if componentName == dashboard.ComponentName {
-		return instance, nil
-	}
-	// END OF DEBUGGING
 
 	enabled := component.GetManagementState() == v1.Managed
 	// First set conditions to reflect a component is about to be reconciled
@@ -357,23 +342,6 @@ func (r *DataScienceClusterReconciler) updateStatus(ctx context.Context, origina
 		// Try to update
 		err = r.Client.Status().Update(context.TODO(), saved)
 
-		// Return err itself here (not wrapped inside another error)
-		// so that RetryOnConflict can identify it correctly.
-		return err
-	})
-	return saved, err
-}
-
-func (r *DataScienceClusterReconciler) updateComponents(ctx context.Context, original *dsc.DataScienceCluster) (*dsc.DataScienceCluster, error) {
-	saved := &dsc.DataScienceCluster{}
-	err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		err := r.Client.Get(ctx, client.ObjectKeyFromObject(original), saved)
-		if err != nil {
-			return err
-		}
-
-		// Try to update
-		err = r.Client.Update(context.TODO(), saved)
 		// Return err itself here (not wrapped inside another error)
 		// so that RetryOnConflict can identify it correctly.
 		return err
