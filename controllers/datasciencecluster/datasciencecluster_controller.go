@@ -363,13 +363,9 @@ func (r *DataScienceClusterReconciler) watchDataScienceClusterResources(a client
 				return []reconcile.Request{{
 					NamespacedName: types.NamespacedName{Name: instanceList.Items[0].Name},
 				}}
-			} else {
-				return nil
 			}
 		}
-		return []reconcile.Request{{
-			NamespacedName: types.NamespacedName{Name: instanceList.Items[0].Name},
-		}}
+		return nil
 	} else if len(instanceList.Items) == 0 {
 		return []reconcile.Request{{
 			NamespacedName: types.NamespacedName{Name: "default"},
